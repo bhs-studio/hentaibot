@@ -110,3 +110,8 @@ for event in longpoll.listen():
             except Exception as error:
                 print(error)
                 write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
+        elif event.object.text.upper()=='/TEST':
+            try:
+                write_msg(event.object.peer_id, "Всё работает :)")
+            except Exception as e:
+                print(e)
