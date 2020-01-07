@@ -1,5 +1,5 @@
 # hentaibot
-New bot for social network VKontakte. This bot created for sending pictures and videos (soon) in chat. 
+The new bot for social network VKontakte. This bot created for sending pictures and videos (soon) in chat. 
 <br> 
 How to run:
 <ol>
