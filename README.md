@@ -3,7 +3,7 @@ New bot for social network VKontakte. This bot created for sending pictures and 
 <br> 
 How to run:
 <ol>
-<li>Clone this repostiory on your device</li> 
+<li>Clone this repostiory to you device</li> 
 <li>Insert access token and group id <br>
  How to get token read in official docs. https://vk.com/dev/access_token </li> 
 <li>Install requirements (look at workflow or install vk_api module) </li>  
