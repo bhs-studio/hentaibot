@@ -37,9 +37,19 @@ for peer in peers:
 longpoll = VkBotLongPoll(vk, tokens.groupID, wait = 259200) #Вставь свой ID группы в пустое поле
 hello = ["Приветики)", "Hello", "👋🏻", "Привет!", "Здравствуй", "Приветики) Знаешь как пользоваться ботом?) Нет? Тогда напиши /help))"]
 otvet = ["Да)?", "Ммм?", "Я знаю, что ты хочешь 😏", "Дай угадать, зачем ты меня зoвешь 😉", "Да?", "Слушаю 😊", "Разработчик бота не несет никакой ответственности за его содержимое!"]
+
+#Load pic count
 f = open("./pic", "r")
 pic = int(f.read())
 f.close()
+
+#Load manga db
+f = open("./manga", "r")
+manga = []
+for line in f.readlines():
+    manga.append(line)
+f.close()
+
 print("STARTED")
 log("✅ Hentai Bot успешно запущен ✅")
 for event in longpoll.listen():
@@ -98,6 +108,40 @@ for event in longpoll.listen():
                 write_msg(event.object.peer_id, "Беседа отключена")
             else:
                 write_msg(event.object.peer_id, "У вас нет прав на подключение бесед!")
+        elif(len(event.object.text.split(' ')) == 3 and event.object.text.split(' ')[0].upper()=="/MANGA" and event.object.text.split(' ')[1].upper()=="DEL"):
+            if(isAdmin(event.object.from_id)):
+                f = open("./peers/"+str(event.object.peer_id), "w")
+                f.close()
+                manga_id = int(event.object.text.split(' ')[2])
+                manga.remove(manga[manga_id])
+                f = open("./manga", "w")
+                for url in manga:
+                    f.write(url+'\n')
+                f.close()
+                write_msg(event.object.peer_id, "Манга успешно удалена!")
+            else:
+                write_msg(event.object.peer_id, "У вас нет прав на управление контентом!")
+        elif(len(event.object.text.split(' ')) == 3 and event.object.text.split(' ')[0].upper()=="/MANGA" and event.object.text.split(' ')[1].upper()=="ADD"):
+            if(isAdmin(event.object.from_id)):
+                f = open("./peers/"+str(event.object.peer_id), "w")
+                f.close()
+                manga.append(event.object.text.split(' ')[2])
+                f = open("./manga", "a")
+                for url in manga:
+                    f.write(url+'\n')
+                f.close()
+                write_msg(event.object.peer_id, f"Манга успешно добавлена!\n🔑 MangaID: {len(manga)}")
+            else:
+                write_msg(event.object.peer_id, "У вас нет прав на управление контентом!")
+        elif(event.object.text.upper()=="/MANGA" or event.object.text.upper()=="/МАНГА"):
+            try:
+                f = open("./peers/" + str(event.object.peer_id), "r")
+                f.close()
+                manga_id = randint(0, len(manga)-1)
+                write_msg(event.object.peer_id, f"🔞 Случайная хентай манга из базы: {manga[manga_id]}\n🔑 MangaID: {str(manga_id+1)}")
+            except Exception as error:
+                print(error)
+                write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
         elif(event.object.text.upper()=="/XXX" or event.object.text.upper()=="/ХХХ" or event.object.text.upper()=="/HENTAI" or event.object.text.upper()=="/ХЕНТАЙ"):
             try:
                 f = open("./peers/" + str(event.object.peer_id), "r")
