@@ -51,7 +51,7 @@ for line in f.readlines():
 f.close()
 
 print("STARTED")
-log("✅ Hentai Bot успешно запущен ✅")
+#log("✅ Hentai Bot успешно запущен ✅")
 for event in longpoll.listen():
     if(event.type == VkBotEventType.MESSAGE_NEW):
         if(str(event.object.text).upper() == "ПРИВЕТ" or str(event.object.text).upper() == "ХАЙ" or str(event.object.text).upper() == "ДАРОВ" or str(event.object.text).upper() == "ПРИВ" or str(event.object.text).upper() == "ПРИВЕТ ВСЕМ" or str(event.object.text).upper() == "ВСЕМ ПРИВЕТ"):
@@ -61,7 +61,7 @@ for event in longpoll.listen():
         elif(event.object.text.upper()=="/RULES"):
             vk.method('messages.send', {'peer_id': event.object.peer_id, 'message': "✨ Правила беседы ✨\n👉🏻 Нельзя кикать без весомой причины\n👉🏻 Нельзя пиарить\n👉🏻 Нельзя спамить (кроме команд)\n✅ Команды бота: /xxx, /hentai, /хентай\n💬 Помощь: /help\n🗣 Разговорные: Привет, Хентай, Хентай пикчи\n🔞 Предназначено для лиц, старше 18 лет 🔞", "random_id": randint(-2147483648, 2147483648)})
         elif(event.object.text.upper()=="/HELP"):
-            vk.method('messages.send', {'peer_id': event.object.peer_id, 'message': "✨ Команды бота ✨\n🔹 /xxx\n🔹 /hentai\n🔹 /хентай\n👤 Для админов:\n🔹 /admin (id)\n🔹 /unadmin (id)\n🔹 /pic (кол-во)\n🔹 /on или /off\n💬 Помощь:\n🔹 /rules\n🔹 /help\n🗣 Разговорные:\n🔹 Привет\n🔹 Хентай\n🔹 Хентай пикчи\n🔞 Ограничение 18 лет 🔞", "random_id": randint(-2147483648, 2147483648)})
+            vk.method('messages.send', {'peer_id': event.object.peer_id, 'message': "✨ Команды бота ✨\n🔹 /xxx\n🔹 /hentai\n🔹 /хентай\n🔹 /manga\n👤 Для админов:\n🔹 /admin (id)\n🔹 /unadmin (id)\n🔹 /manga add (url)\n🔹 /manga del (id)\n🔹 /pic (кол-во)\n🔹 /on или /off\n💬 Помощь:\n🔹 /rules\n🔹 /help\n🗣 Разговорные:\n🔹 Привет\n🔹 Хентай\n🔹 Хентай пикчи\n🔞 Ограничение 18 лет 🔞", "random_id": randint(-2147483648, 2147483648)})
         elif(event.object.text.upper()=="ХЕНТАЙ ПИКЧИ"):
             write_msg(event.object.peer_id, "У меня в коллекции уже " + str(pic) + " картинок 😉")
         elif(event.object.text.upper()=="/PEER"):
