@@ -3,6 +3,8 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from random import randint
 import os
 import tokens
+import json
+
 
 #BHS Server Log code
 token = tokens.token
@@ -17,14 +19,24 @@ def log(message):
 def write_msg(peer_id, message):
     vk.method('messages.send', {'peer_id': peer_id, 'message': message, "random_id": randint(-2147483648, 2147483648)})
 
-def send_pic(peer_id, attachment):
-    vk.method('messages.send', {'peer_id': peer_id, 'attachment': attachment, "random_id": randint(-2147483648, 2147483648)})
+def send_pic(peer_id, attachment, keyboard):
+    vk.method('messages.send', {'peer_id': peer_id, 'message': '❤ Лайки: 0 💔 Дизлайки: 0', 'keyboard': keyboard, 'attachment': attachment, "random_id": randint(-2147483648, 2147483648)})
 def isAdmin(user_id):
     admins = os.listdir("./admins/")
     for admin in admins:
         if(str(user_id) == str(os.path.basename(admin))):
             return True
     return False
+
+def get_button(label, color, payload="") :
+    return {
+        "action": {
+            "type": "text",
+            "payload": json.dumps(payload) ,
+            "label": label
+        },
+        "color": color
+    }
 
 vk = vk_api.VkApi(
     token=tokens.token #Вставь свой 
@@ -49,6 +61,21 @@ manga = []
 for line in f.readlines():
     manga.append(line)
 f.close()
+
+likeboard = {
+    "inline": True, 
+    "buttons": [
+        [
+            get_button(label="Like", color="positive"),    
+            get_button(label="Dislike", color="negative"),
+            get_button(label="NEED MORE", color="secondary")
+        ]
+    ]
+#тут кнопки добавляются
+}
+
+likeboard = json.dumps(likeboard, ensure_ascii=False).encode('utf-8')
+likeboard = str(likeboard.decode('utf-8'))
 
 print("STARTED")
 #log("✅ Hentai Bot успешно запущен ✅")
@@ -142,7 +169,7 @@ for event in longpoll.listen():
             except Exception as error:
                 print(error)
                 write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
-        elif(event.object.text.upper()=="/XXX" or event.object.text.upper()=="/ХХХ" or event.object.text.upper()=="/HENTAI" or event.object.text.upper()=="/ХЕНТАЙ"):
+        elif(event.object.text.upper() == "[CLUB188217821|ХЕНТАЙ] NEED MORE" or event.object.text.upper() == "[CLUB188217821|HENTAI] NEED MORE" or event.object.text.upper() == "[CLUB188217821|@CLUB188217821] NEED MORE" or event.object.text.upper() == "@CLUB188217821 NEED MORE" or  event.object.text.upper()=="/XXX" or event.object.text.upper()=="/ХХХ" or event.object.text.upper()=="/HENTAI" or event.object.text.upper()=="/ХЕНТАЙ"):
             try:
                 f = open("./peers/" + str(event.object.peer_id), "r")
                 f.close()
@@ -150,7 +177,7 @@ for event in longpoll.listen():
                 pic_id = str(randint(457239022, 457239022 + pic))
                 pic_id = "photo-188217821_" + pic_id
                 print(pic_id)
-                send_pic(event.object.peer_id, pic_id)
+                send_pic(event.object.peer_id, pic_id, likeboard)
             except Exception as error:
                 print(error)
                 write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
