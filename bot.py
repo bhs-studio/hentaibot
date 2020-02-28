@@ -213,6 +213,35 @@ for event in longpoll.listen():
             except Exception as error:
                 print(error)
                 write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
+        elif(text.split(' ')[0] == 'DISLIKE' and len(text.split(' ')) > 1):
+            con = pymysql.connect(tokens.serverdb, tokens.userdb, 
+                tokens.passworddb, tokens.dbname)
+            cur = con.cursor()
+            cur.execute("SELECT `users` FROM `photos` WHERE id = " + text.split(' ')[1])
+            info = cur.fetchall()
+
+            if(len(info) != 0):
+                liked = False
+                for user in info[0][0].split(','):
+                    if(user == str(event.object.from_id)):
+                        write_msg(event.object.peer_id, f"Вы уже оценили это фото!")
+                        liked = True
+                if(liked): 
+                    continue
+
+                sql = 'UPDATE `photos` SET `likes` = `dislikes` + 1 where id = ' + text.split(' ')[1] + ';'
+                cur.execute(sql)
+                sql = f"UPDATE `photos` SET `users` = CONCAT(`users`, ',', \"{str(event.object.from_id)}\") where id = {text.split(' ')[1]};"
+                cur.execute(sql)
+                con.commit()
+                con.close()
+                write_msg(event.object.peer_id, f"💔 Отметка <<Не нравится>> установлена")
+            else:
+                sql = f"INSERT INTO `photos` VALUES ({text.split(' ')[1]}, 0, 1, {str(event.object.from_id)});"
+                cur.execute(sql)
+                con.commit()
+                con.close()
+                write_msg(event.object.peer_id, f"💔 Отметка <<Не нравится>> установлена")
         elif(text.split(' ')[0] == 'LIKE' and len(text.split(' ')) > 1):
             con = pymysql.connect(tokens.serverdb, tokens.userdb, 
                 tokens.passworddb, tokens.dbname)
