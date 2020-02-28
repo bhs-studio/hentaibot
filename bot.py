@@ -188,9 +188,17 @@ for event in longpoll.listen():
             try:
                 f = open("./peers/" + str(event.object.peer_id), "r")
                 f.close()
-                #photo-188217821_457239***
-                pic_id = str(randint(457239022, 457239022 + pic))
-                pic_url = "photo-188217821_" + pic_id
+                while True:
+                    #photo-188217821_457239***
+                    pic_id = randint(457239022, 457239022 + pic)
+
+                    ###EXCEPT BLOCK###
+                    if(pic_id > 457239275 and pic_id < 457239574):
+                        continue
+                    ###EEXCEPT BLOCK###
+
+                    break
+                pic_url = "photo-188217821_" + str(pic_id)
                 print(pic_url)
 
                 likeboard = {
