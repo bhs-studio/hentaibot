@@ -217,21 +217,31 @@ for event in longpoll.listen():
             con = pymysql.connect(tokens.serverdb, tokens.userdb, 
                 tokens.passworddb, tokens.dbname)
             cur = con.cursor()
-            cur.execute("SELECT `id` FROM `photos` WHERE id = " + text.split(' ')[1])
+            cur.execute("SELECT `users` FROM `photos` WHERE id = " + text.split(' ')[1])
             info = cur.fetchall()
 
-            if(len(info) == 0):
-                sql = f"UPDATE `photos` SET `likes` = `likes` + 1; UPDATE `photos` SET `users` = `users` + \",{str(event.object.from_id)}\";"
+            if(len(info) != 0):
+                liked = False
+                for user in info[0][0].split(','):
+                    if(user == str(event.object.from_id)):
+                        write_msg(event.object.peer_id, f"Вы уже оценили это фото!")
+                        liked = True
+                if(liked): 
+                    continue
+
+                sql = 'UPDATE `photos` SET `likes` = `likes` + 1 where id = ' + text.split(' ')[1] + ';'
+                cur.execute(sql)
+                sql = f"UPDATE `photos` SET `users` = CONCAT(`users`, ',', \"{str(event.object.from_id)}\") where id = {text.split(' ')[1]};"
                 cur.execute(sql)
                 con.commit()
                 con.close()
-                write_msg(event.object.peer_id, f"❤ Отметка <<Нравится>> успешно установлена на фото #{text.split(' ')[1]}")
+                write_msg(event.object.peer_id, f"❤ Отметка <<Нравится>> установлена")
             else:
                 sql = f"INSERT INTO `photos` VALUES ({text.split(' ')[1]}, 1, 0, {str(event.object.from_id)});"
                 cur.execute(sql)
                 con.commit()
                 con.close()
-                write_msg(event.object.peer_id, f"❤ Отметка <<Нравится>> успешно установлена на фото #{text.split(' ')[1]}")
+                write_msg(event.object.peer_id, f"❤ Отметка <<Нравится>> установлена")
         elif text=='/TEST':
             try:
                 write_msg(event.object.peer_id, "Всё работает :)")
