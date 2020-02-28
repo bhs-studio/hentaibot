@@ -19,8 +19,8 @@ def log(message):
 def write_msg(peer_id, message):
     vk.method('messages.send', {'peer_id': peer_id, 'message': message, "random_id": randint(-2147483648, 2147483648)})
 
-def send_pic(peer_id, attachment, keyboard):
-    vk.method('messages.send', {'peer_id': peer_id, 'message': '❤ Лайки: 0 💔 Дизлайки: 0', 'keyboard': keyboard, 'attachment': attachment, "random_id": randint(-2147483648, 2147483648)})
+def send_pic(peer_id, attachment, keyboard, like, dislike):
+    vk.method('messages.send', {'peer_id': peer_id, 'message': f'❤ Лайки: {like} 💔 Дизлайки: {dislike}', 'keyboard': keyboard, 'attachment': attachment, "random_id": randint(-2147483648, 2147483648)})
 def isAdmin(user_id):
     admins = os.listdir("./admins/")
     for admin in admins:
@@ -207,7 +207,17 @@ for event in longpoll.listen():
 
                 likeboard = json.dumps(likeboard, ensure_ascii=False).encode('utf-8')
                 likeboard = str(likeboard.decode('utf-8'))
-                send_pic(event.object.peer_id, pic_url, likeboard)
+
+                con = pymysql.connect(tokens.serverdb, tokens.userdb, 
+                    tokens.passworddb, tokens.dbname)
+                cur = con.cursor()
+                cur.execute("SELECT `likes`, `dislikes` FROM `photos` WHERE id = " + str(pic_id))
+                info = cur.fetchall()
+
+                if(len(info) != 0):
+                    send_pic(event.object.peer_id, pic_url, likeboard, info[0][0], info[0][1])
+                else:
+                    send_pic(event.object.peer_id, pic_url, likeboard, 0, 0)
 
                 del likeboard
             except Exception as error:
