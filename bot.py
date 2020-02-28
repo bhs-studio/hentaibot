@@ -4,7 +4,7 @@ from random import randint
 import os
 import tokens
 import json
-
+import pymysql
 
 #BHS Server Log code
 token = tokens.token
@@ -77,21 +77,33 @@ likeboard = {
 likeboard = json.dumps(likeboard, ensure_ascii=False).encode('utf-8')
 likeboard = str(likeboard.decode('utf-8'))
 
+tags = [
+    "[CLUB188217821|ХЕНТАЙ]",
+    "[CLUB188217821|HENTAI]",
+    "[CLUB188217821|@CLUB188217821]",
+    "@CLUB188217821"
+]
+
 print("STARTED")
 #log("✅ Hentai Bot успешно запущен ✅")
 for event in longpoll.listen():
     if(event.type == VkBotEventType.MESSAGE_NEW):
-        if(str(event.object.text).upper() == "ПРИВЕТ" or str(event.object.text).upper() == "ХАЙ" or str(event.object.text).upper() == "ДАРОВ" or str(event.object.text).upper() == "ПРИВ" or str(event.object.text).upper() == "ПРИВЕТ ВСЕМ" or str(event.object.text).upper() == "ВСЕМ ПРИВЕТ"):
+
+        text = text
+        for tag in tags:
+            text = text.replace(tag, '').strip()
+
+        if(text == "ПРИВЕТ" or text == "ХАЙ" or text == "ДАРОВ" or text == "ПРИВ" or text == "ПРИВЕТ ВСЕМ" or text == "ВСЕМ ПРИВЕТ"):
             write_msg(event.object.peer_id, hello[randint(0,len(hello)-1)])
-        elif(event.object.text.upper()=="ХЕНТАЙ"):
+        elif(text=="ХЕНТАЙ"):
             write_msg(event.object.peer_id, otvet[randint(0,len(otvet)-1)])
-        elif(event.object.text.upper()=="/RULES"):
+        elif(text=="/RULES"):
             vk.method('messages.send', {'peer_id': event.object.peer_id, 'message': "✨ Правила беседы ✨\n👉🏻 Нельзя кикать без весомой причины\n👉🏻 Нельзя пиарить\n👉🏻 Нельзя спамить (кроме команд)\n✅ Команды бота: /xxx, /hentai, /хентай\n💬 Помощь: /help\n🗣 Разговорные: Привет, Хентай, Хентай пикчи\n🔞 Предназначено для лиц, старше 18 лет 🔞", "random_id": randint(-2147483648, 2147483648)})
-        elif(event.object.text.upper()=="/HELP"):
+        elif(text=="/HELP"):
             vk.method('messages.send', {'peer_id': event.object.peer_id, 'message': "✨ Команды бота ✨\n🔹 /xxx\n🔹 /hentai\n🔹 /хентай\n🔹 /manga\n👤 Для админов:\n🔹 /admin (id)\n🔹 /unadmin (id)\n🔹 /manga add (url)\n🔹 /manga del (id)\n🔹 /pic (кол-во)\n🔹 /on или /off\n💬 Помощь:\n🔹 /rules\n🔹 /help\n🗣 Разговорные:\n🔹 Привет\n🔹 Хентай\n🔹 Хентай пикчи\n🔞 Ограничение 18 лет 🔞", "random_id": randint(-2147483648, 2147483648)})
-        elif(event.object.text.upper()=="ХЕНТАЙ ПИКЧИ"):
+        elif(text=="ХЕНТАЙ ПИКЧИ"):
             write_msg(event.object.peer_id, "У меня в коллекции уже " + str(pic) + " картинок 😉")
-        elif(event.object.text.upper()=="/PEER"):
+        elif(text=="/PEER"):
             write_msg(event.object.peer_id, "PeerID этой беседы: " + str(event.object.peer_id))
         elif(event.object.text.split(' ')[0].upper()=="/UNADMIN" and len(event.object.text.split(' ')) == 2):
             if(str(event.object.from_id) == "501702167"):
@@ -121,7 +133,7 @@ for event in longpoll.listen():
                     write_msg(event.object.peer_id, "Не получилось :(")
             else:
                 write_msg(event.object.peer_id, "У вас нет на это прав!")
-        elif(event.object.text.upper()=="/ON"):
+        elif(text=="/ON"):
             if(isAdmin(event.object.from_id)):
                 f = open("./peers/"+str(event.object.peer_id), "w")
                 f.close()
@@ -129,7 +141,7 @@ for event in longpoll.listen():
                 write_msg(event.object.peer_id, "Беседа подключена")
             else:
                 write_msg(event.object.peer_id, "У вас нет прав на подключение бесед!")
-        elif(event.object.text.upper()=="/OFF"):
+        elif(text=="/OFF"):
             if(isAdmin(event.object.from_id)):
                 os.remove("./peers/" + str(event.object.peer_id))
                 write_msg(event.object.peer_id, "Беседа отключена")
@@ -160,7 +172,7 @@ for event in longpoll.listen():
                 write_msg(event.object.peer_id, f"Манга успешно добавлена!\n🔑 MangaID: {len(manga)}")
             else:
                 write_msg(event.object.peer_id, "У вас нет прав на управление контентом!")
-        elif(event.object.text.upper()=="/MANGA" or event.object.text.upper()=="/МАНГА"):
+        elif(text=="/MANGA" or text=="/МАНГА"):
             try:
                 f = open("./peers/" + str(event.object.peer_id), "r")
                 f.close()
@@ -169,19 +181,36 @@ for event in longpoll.listen():
             except Exception as error:
                 print(error)
                 write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
-        elif(event.object.text.upper() == "[CLUB188217821|ХЕНТАЙ] NEED MORE" or event.object.text.upper() == "[CLUB188217821|HENTAI] NEED MORE" or event.object.text.upper() == "[CLUB188217821|@CLUB188217821] NEED MORE" or event.object.text.upper() == "@CLUB188217821 NEED MORE" or  event.object.text.upper()=="/XXX" or event.object.text.upper()=="/ХХХ" or event.object.text.upper()=="/HENTAI" or event.object.text.upper()=="/ХЕНТАЙ"):
+        elif(text == "[CLUB188217821|ХЕНТАЙ] NEED MORE" or text == "[CLUB188217821|HENTAI] NEED MORE" or text == "[CLUB188217821|@CLUB188217821] NEED MORE" or text == "@CLUB188217821 NEED MORE" or  text=="/XXX" or text=="/ХХХ" or text=="/HENTAI" or text=="/ХЕНТАЙ"):
             try:
                 f = open("./peers/" + str(event.object.peer_id), "r")
                 f.close()
                 #photo-188217821_457239***
                 pic_id = str(randint(457239022, 457239022 + pic))
-                pic_id = "photo-188217821_" + pic_id
-                print(pic_id)
-                send_pic(event.object.peer_id, pic_id, likeboard)
+                pic_url = "photo-188217821_" + pic_id
+                print(pic_url)
+
+                likeboard = {
+                    "inline": True, 
+                    "buttons": [
+                        [
+                            get_button(label=f"Like {pic_id}", color="positive"),    
+                            get_button(label=f"Dislike {pic_id}", color="negative"),
+                            get_button(label="NEED MORE", color="secondary")
+                        ]
+                    ]
+                #тут кнопки добавляются
+                }
+
+                likeboard = json.dumps(likeboard, ensure_ascii=False).encode('utf-8')
+                likeboard = str(likeboard.decode('utf-8'))
+                send_pic(event.object.peer_id, pic_url, likeboard)
+
+                del likeboard
             except Exception as error:
                 print(error)
                 write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
-        elif event.object.text.upper()=='/TEST':
+        elif text=='/TEST':
             try:
                 write_msg(event.object.peer_id, "Всё работает :)")
             except Exception as e:
