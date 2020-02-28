@@ -20,7 +20,7 @@ def write_msg(peer_id, message):
     vk.method('messages.send', {'peer_id': peer_id, 'message': message, "random_id": randint(-2147483648, 2147483648)})
 
 def send_pic(peer_id, attachment, keyboard, like, dislike):
-    vk.method('messages.send', {'peer_id': peer_id, 'message': f'❤ Лайки: {like} 💔 Дизлайки: {dislike}', 'keyboard': keyboard, 'attachment': attachment, "random_id": randint(-2147483648, 2147483648)})
+    vk.method('messages.send', {'peer_id': peer_id, 'message': f'❤ Лайки: {like}\n💔 Дизлайки: {dislike}', 'keyboard': keyboard, 'attachment': attachment, "random_id": randint(-2147483648, 2147483648)})
 def isAdmin(user_id):
     admins = os.listdir("./admins/")
     for admin in admins:
