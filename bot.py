@@ -181,7 +181,7 @@ for event in longpoll.listen():
             except Exception as error:
                 print(error)
                 write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
-        elif(text == "[CLUB188217821|ХЕНТАЙ] NEED MORE" or text == "[CLUB188217821|HENTAI] NEED MORE" or text == "[CLUB188217821|@CLUB188217821] NEED MORE" or text == "@CLUB188217821 NEED MORE" or  text=="/XXX" or text=="/ХХХ" or text=="/HENTAI" or text=="/ХЕНТАЙ"):
+        elif(text == "NEED MORE" or text=="/XXX" or text=="/ХХХ" or text=="/HENTAI" or text=="/ХЕНТАЙ"):
             try:
                 f = open("./peers/" + str(event.object.peer_id), "r")
                 f.close()
