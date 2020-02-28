@@ -89,7 +89,7 @@ print("STARTED")
 for event in longpoll.listen():
     if(event.type == VkBotEventType.MESSAGE_NEW):
 
-        text = text
+        text = event.object.text.upper()
         for tag in tags:
             text = text.replace(tag, '').strip()
 
