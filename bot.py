@@ -192,9 +192,14 @@ for event in longpoll.listen():
                     #photo-188217821_457239***
                     pic_id = randint(457239022, 457239022 + pic)
 
+                    except_ids = [{457239275, 457239574}]
+                    
                     ###EXCEPT BLOCK###
-                    if(pic_id > 457239275 and pic_id < 457239574):
-                        continue
+                    for except_id in except_ids:
+                        if(len(except_id) == 1 and except_id == pic_id):
+                            continue
+                        elif(len(except_id) == 2 and pic_id > except_ids[0] and pic_id < except_ids[1]):
+                            continue
                     ###EEXCEPT BLOCK###
 
                     break
