@@ -7,6 +7,8 @@ How to run:
 <li>Insert access token and group id <br>
  How to get token read in official docs. https://vk.com/dev/access_token </li> 
 <li>Install requirements (look at workflow or install vk_api module) </li>  
+<li>Insert your picture ID's range on lines №193-206 </li> 
+<li>Insert your tags on lines №80-85 </li> 
 <li>Run bot.py with Python 3.7 </li> 
 <li>Have a fun :) </li>  
 </ol><br> 
