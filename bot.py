@@ -19,6 +19,9 @@ def log(message):
 def write_msg(peer_id, message):
     vk.method('messages.send', {'peer_id': peer_id, 'message': message, "random_id": randint(-2147483648, 2147483648)})
 
+def write_media_msg(peer_id, message, attachment):
+    vk.method('messages.send', {'peer_id': peer_id, 'message': message, 'attachment': attachment, "random_id": randint(-2147483648, 2147483648)})
+
 def send_pic(peer_id, attachment, keyboard, like, dislike):
     vk.method('messages.send', {'peer_id': peer_id, 'message': f'❤ Лайки: {like}\n💔 Дизлайки: {dislike}', 'keyboard': keyboard, 'attachment': attachment, "random_id": randint(-2147483648, 2147483648)})
 def isAdmin(user_id):
@@ -59,8 +62,16 @@ f.close()
 f = open("./manga", "r")
 manga = []
 for line in f.readlines():
-    manga.append(line)
+    manga.append(line.split('\n')[0])
 f.close()
+
+def manga_upd():
+    f = open("./manga", "r")
+    manga = []
+    for line in f.readlines():
+        manga.append(line.split('\n')[0])
+    f.close()
+    return manga
 
 likeboard = {
     "inline": True, 
@@ -79,6 +90,7 @@ likeboard = str(likeboard.decode('utf-8'))
 
 tags = [
     "[CLUB188217821|ХЕНТАЙ]",
+    "[CLUB188217821|XEНТАЙ]",
     "[CLUB188217821|HENTAI]",
     "[CLUB188217821|@CLUB188217821]",
     "@CLUB188217821"
@@ -163,6 +175,12 @@ for event in longpoll.listen():
                 write_msg(event.object.peer_id, "Манга успешно удалена!")
             else:
                 write_msg(event.object.peer_id, "У вас нет прав на управление контентом!")
+        elif(len(event.object.text.split(' ')) == 2 and event.object.text.split(' ')[0].upper()=="/MANGA" and event.object.text.split(' ')[1].upper()=="UPD"):
+            if(isAdmin(event.object.from_id)):
+                manga = manga_upd()
+                write_msg(event.object.peer_id, f"🔑 Манга успешно обновлена! Всего в базе: {len(manga)}")
+            else:
+                write_msg(event.object.peer_id, "У вас нет прав на управление контентом!")
         elif(len(event.object.text.split(' ')) == 3 and event.object.text.split(' ')[0].upper()=="/MANGA" and event.object.text.split(' ')[1].upper()=="ADD"):
             if(isAdmin(event.object.from_id)):
                 f = open("./peers/"+str(event.object.peer_id), "w")
@@ -180,7 +198,10 @@ for event in longpoll.listen():
                 f = open("./peers/" + str(event.object.peer_id), "r")
                 f.close()
                 manga_id = randint(0, len(manga)-1)
-                write_msg(event.object.peer_id, f"🔞 Случайная хентай манга из базы: {manga[manga_id]}\n🔑 MangaID: {str(manga_id+1)}")
+                if(len(manga[manga_id].split("::")) > 1):
+                    write_media_msg(event.object.peer_id, f"🔞 Случайная xeнтай манга из базы: {manga[manga_id].split('::')[0]}\n\n🔑 MangaID: {str(manga_id+1)}\n🗺 Обложка манги:", manga[manga_id].split('::')[1])
+                else:
+                    write_msg(event.object.peer_id, f"🔞 Случайная xeнтай манга из базы: {manga[manga_id].split('::')[0]}\n\n🔑 MangaID: {str(manga_id+1)}")
             except Exception as error:
                 print(error)
                 write_msg(event.object.peer_id, "Эта беседа не подключена! :(")
@@ -192,14 +213,9 @@ for event in longpoll.listen():
                     #photo-188217821_457239***
                     pic_id = randint(457239022, 457239022 + pic)
 
-                    except_ids = [{457239275, 457239574}]
-                    
                     ###EXCEPT BLOCK###
-                    for except_id in except_ids:
-                        if(len(except_id) == 1 and except_id == pic_id):
-                            continue
-                        elif(len(except_id) == 2 and pic_id > except_ids[0] and pic_id < except_ids[1]):
-                            continue
+                    if(pic_id > 457239275 and pic_id < 457239574):
+                        continue
                     ###EEXCEPT BLOCK###
 
                     break
